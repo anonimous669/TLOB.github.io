@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 3-Product Store</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; background: #fafafa; color: #333; }
+        .store-container { max-width: 1000px; margin: 0 auto; }
+        .product-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px; }
+        .card { background: white; border: 1px solid #e0e0e0; padding: 25px; border-radius: 12px; width: 260px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .price { font-size: 1.25rem; font-weight: bold; color: #111; margin: 10px 0; }
+        
+        /* Quantity Selector Styling */
+        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
+        .qty-btn { background: #f0f0f0; border: 1px solid #ccc; font-size: 1.2rem; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: background 0.2s; }
+        .qty-btn:hover { background: #e0e0e0; }
+        .qty-number { font-size: 1.2rem; font-weight: bold; width: 30px; }
+        
+        /* Buy Button Styling */
+        .btn { display: block; background: #007bff; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.2s; border: none; width: 100%; font-size: 1rem; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .total-display { font-size: 0.9rem; color: #666; margin-top: 5px; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+    <div class="store-container">
+        <h1>Welcome to My Store</h1>
+        <p>Select your items and quantities below to checkout.</p>
+
+        <div class="product-grid">
+            <!-- Product 1 -->
+            <div class="card">
+                <div>
+                    <h3>Product One Name</h3>
+                    <p class="price" id="p1-base">$19.99</p>
+                    <p>Short description of your first amazing product.</p>
+                </div>
+                <div>
+                    <div class="quantity-control">
+                        <div class="qty-btn" onclick="changeQty('p1', -1)">−</div>
+                        <div class="qty-number" id="p1-qty">1</div>
+                        <div class="qty-btn" onclick="changeQty('p1', 1)">+</div>
+                    </div>
+                    <button class="btn" onclick="checkout('p1')">
+                        Buy Now
+                        <div class="total-display" id="p1-total">Total: $19.99</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="card">
+                <div>
+                    <h3>Product Two Name</h3>
+                    <p class="price" id="p2-base">$29.99</p>
+                    <p>Short description of your second amazing product.</p>
+                </div>
+                <div>
+                    <div class="quantity-control">
+                        <div class="qty-btn" onclick="changeQty('p2', -1)">−</div>
+                        <div class="qty-number" id="p2-qty">1</div>
+                        <div class="qty-btn" onclick="changeQty('p2', 1)">+</div>
+                    </div>
+                    <button class="btn" onclick="checkout('p2')">
+                        Buy Now
+                        <div class="total-display" id="p2-total">Total: $29.99</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="card">
+                <div>
+                    <h3>Product Three Name</h3>
+                    <p class="price" id="p3-base">$39.99</p>
+                    <p>Short description of your third amazing product.</p>
+                </div>
+                <div>
+                    <div class="quantity-control">
+                        <div class="qty-btn" onclick="changeQty('p3', -1)">−</div>
+                        <div class="qty-number" id="p3-qty">1</div>
+                        <div class="qty-btn" onclick="changeQty('p3', 1)">+</div>
+                    </div>
+                    <button class="btn" onclick="checkout('p3')">
+                        Buy Now
+                        <div class="total-display" id="p3-total">Total: $39.99</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const prices = {
+            p1: 19.99,
+            p2: 29.99,
+            p3: 39.99
+        };
+
+        function changeQty(productId, amount) {
+            const qtyElement = document.getElementById(productId + '-qty');
+            let currentQty = parseInt(qtyElement.innerText);
+            currentQty += amount;
+            if (currentQty < 1) currentQty = 1;
+            qtyElement.innerText = currentQty;
+            
+            const totalElement = document.getElementById(productId + '-total');
+            const totalCost = (currentQty * prices[productId]).toFixed(2);
+            totalElement.innerText = 'Total: $' + totalCost;
+        }
+
+        function checkout(productId) {
+            const qty = document.getElementById(productId + '-qty').innerText;
+            alert('Proceeding to checkout for ' + qty + ' item(s).');
+        }
+    </script>
+
+</body>
+</html>
