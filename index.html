@@ -116,7 +116,8 @@
             p3: 4.00
         };
 
-        const minQuantities = {
+        // Minimum charge values which also serve as our step sizes
+        const stepSizes = {
             p1: 1,
             p2: 50,
             p3: 15
@@ -127,13 +128,16 @@
             let currentQty = parseInt(qtyElement.innerText);
             
             if (direction === 1) {
-                currentQty = currentQty * 2;
+                // Add the minimum charge amount instead of doubling
+                currentQty = currentQty + stepSizes[productId];
             } else if (direction === -1) {
-                currentQty = currentQty / 2;
+                // Subtract the minimum charge amount instead of halving
+                currentQty = currentQty - stepSizes[productId];
             }
             
-            if (currentQty < minQuantities[productId]) {
-                currentQty = minQuantities[productId];
+            // Prevent lowering the selection below its respective minimum limit
+            if (currentQty < stepSizes[productId]) {
+                currentQty = stepSizes[productId];
             }
             
             qtyElement.innerText = currentQty + 'g';
