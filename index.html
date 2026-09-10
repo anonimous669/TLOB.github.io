@@ -10,21 +10,25 @@
         .product-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px; }
         .card { background: white; border: 1px solid #e0e0e0; padding: 25px; border-radius: 12px; width: 260px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
         
-        /* High-Visibility Price Styling */
+        /* High-Visibility Base Price Styling */
         .price { font-size: 1.75rem; font-weight: 800; color: #28a745; margin: 5px 0; }
         .unit { font-size: 0.95rem; color: #555; margin-bottom: 12px; font-weight: bold; }
         .emoji-title { font-size: 2.5rem; margin: 10px 0; }
         
-        /* Quantity Selector Styling */
-        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
+        /* Quantity Selector & Running Total Styling */
+        .quantity-section { background: #fdfdfd; padding: 15px 5px; border-radius: 8px; border: 1px dashed #ccc; margin: 15px 0; }
+        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px; }
         .qty-btn { background: #f0f0f0; border: 1px solid #ccc; font-size: 1.2rem; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: background 0.2s; }
         .qty-btn:hover { background: #e0e0e0; }
-        .qty-number { font-size: 1.2rem; font-weight: bold; width: 40px; }
+        .qty-number { font-size: 1.2rem; font-weight: bold; width: 60px; color: #111; }
+        
+        /* Clear Running Subtotal Display */
+        .subtotal-display { font-size: 1.3rem; font-weight: 800; color: #28a745; margin-top: 5px; }
+        .subtotal-label { font-size: 0.75rem; color: #777; text-transform: uppercase; font-weight: bold; }
         
         /* Buy Button Styling */
-        .btn { display: block; background: #007bff; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.2s; border: none; width: 100%; font-size: 1rem; cursor: pointer; }
+        .btn { display: block; background: #007bff; color: white; padding: 14px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.2s; border: none; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
         .btn:hover { background: #0056b3; }
-        .total-display { font-size: 0.9rem; color: #666; margin-top: 5px; font-weight: normal; }
     </style>
 </head>
 <body>
@@ -44,15 +48,16 @@
                     <p>High-quality specialty item carefully packaged.</p>
                 </div>
                 <div>
-                    <div class="quantity-control">
-                        <div class="qty-btn" onclick="changeQty('p1', -1)">−</div>
-                        <div class="qty-number" id="p1-qty">1</div>
-                        <div class="qty-btn" onclick="changeQty('p1', 1)">+</div>
+                    <div class="quantity-section">
+                        <div class="quantity-control">
+                            <div class="qty-btn" onclick="changeQty('p1', -1)">−</div>
+                            <div class="qty-number" id="p1-qty">1g</div>
+                            <div class="qty-btn" onclick="changeQty('p1', 1)">+</div>
+                        </div>
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-display" id="p1-total">$100.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p1')">
-                        Buy Now
-                        <div class="total-display" id="p1-total">Total: $100.00 (1g)</div>
-                    </button>
+                    <button class="btn" onclick="checkout('p1')">Buy Now</button>
                 </div>
             </div>
 
@@ -66,15 +71,16 @@
                     <p>Premium rich blend crafted to order.</p>
                 </div>
                 <div>
-                    <div class="quantity-control">
-                        <div class="qty-btn" onclick="changeQty('p2', -1)">−</div>
-                        <div class="qty-number" id="p2-qty">50</div>
-                        <div class="qty-btn" onclick="changeQty('p2', 1)">+</div>
+                    <div class="quantity-section">
+                        <div class="quantity-control">
+                            <div class="qty-btn" onclick="changeQty('p2', -1)">−</div>
+                            <div class="qty-number" id="p2-qty">50g</div>
+                            <div class="qty-btn" onclick="changeQty('p2', 1)">+</div>
+                        </div>
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-display" id="p2-total">$100.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p2')">
-                        Buy Now
-                        <div class="total-display" id="p2-total">Total: $100.00 (50g)</div>
-                    </button>
+                    <button class="btn" onclick="checkout('p2')">Buy Now</button>
                 </div>
             </div>
 
@@ -88,15 +94,16 @@
                     <p>Fresh natural botanicals sourced responsibly.</p>
                 </div>
                 <div>
-                    <div class="quantity-control">
-                        <div class="qty-btn" onclick="changeQty('p3', -1)">−</div>
-                        <div class="qty-number" id="p3-qty">15</div>
-                        <div class="qty-btn" onclick="changeQty('p3', 1)">+</div>
+                    <div class="quantity-section">
+                        <div class="quantity-control">
+                            <div class="qty-btn" onclick="changeQty('p3', -1)">−</div>
+                            <div class="qty-number" id="p3-qty">15g</div>
+                            <div class="qty-btn" onclick="changeQty('p3', 1)">+</div>
+                        </div>
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-display" id="p3-total">$60.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p3')">
-                        Buy Now
-                        <div class="total-display" id="p3-total">Total: $60.00 (15g)</div>
-                    </button>
+                    <button class="btn" onclick="checkout('p3')">Buy Now</button>
                 </div>
             </div>
         </div>
@@ -109,34 +116,38 @@
             p3: 4.00
         };
 
-        // Enforce specific bottom floors for specific products
         const minQuantities = {
             p1: 1,
             p2: 50,
             p3: 15
         };
 
-        fn = function changeQty(productId, amount) {
+        fn = function changeQty(productId, direction) {
             const qtyElement = document.getElementById(productId + '-qty');
             let currentQty = parseInt(qtyElement.innerText);
-            currentQty += amount;
             
-            // Block going below the designated minimum value
+            if (direction === 1) {
+                currentQty = currentQty * 2;
+            } else if (direction === -1) {
+                currentQty = currentQty / 2;
+            }
+            
             if (currentQty < minQuantities[productId]) {
                 currentQty = minQuantities[productId];
             }
             
-            qtyElement.innerText = currentQty;
+            qtyElement.innerText = currentQty + 'g';
             
             const totalElement = document.getElementById(productId + '-total');
             const totalCost = (currentQty * prices[productId]).toFixed(2);
-            totalElement.innerText = 'Total: $' + totalCost + ' (' + currentQty + 'g)';
+            totalElement.innerText = '$' + totalCost;
         };
         window.changeQty = fn;
 
         function checkout(productId) {
             const qty = document.getElementById(productId + '-qty').innerText;
-            alert('Proceeding to checkout for ' + qty + 'g.');
+            const price = document.getElementById(productId + '-total').innerText;
+            alert('Proceeding to checkout for ' + qty + ' at a total of ' + price);
         }
     </script>
 
