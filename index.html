@@ -15,7 +15,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px 20px 100px 20px; }
 
         /* App Header Layout */
         .app-header { background: white; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -28,6 +28,7 @@
 
         /* Modernized Product Rows (App-Style Cards) */
         .product-card { background: var(--card-bg); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 15px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); transition: all 0.2s ease; position: relative; }
+        .product-card.in-cart { border-color: #28a745; background: #fdfdfd; }
         
         .product-top { display: flex; align-items: center; justify-content: space-between; text-align: left; }
         .product-details { flex: 1; padding-right: 12px; }
@@ -43,36 +44,46 @@
         /* Compact Controller Module */
         .product-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 15px; }
         .quantity-section { display: flex; flex-direction: column; align-items: flex-start; }
+        
+        /* Fully Interactive Button Styling */
         .quantity-control { display: flex; align-items: center; background: #edf2f7; border-radius: 24px; padding: 4px; gap: 8px; min-width: 130px; justify-content: space-between; }
-        .qty-btn { width: 32px; height: 32px; background: white; border: none; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none; }
+        .qty-btn { width: 32px; height: 32px; background: white; border: 1px solid var(--border-color); border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none; color: #1a202c; transition: background 0.15s, transform 0.1s; }
         .qty-btn:hover { background: #e2e8f0; }
+        .qty-btn:active { transform: scale(0.92); }
         .qty-number { font-size: 0.95rem; font-weight: 700; color: #1a202c; width: 50px; text-align: center; }
         
         .subtotal-label { font-size: 0.7rem; color: #718096; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
         .subtotal-display { font-size: 1.2rem; font-weight: 800; color: #28a745; }
 
-        /* Buy Button Styling */
-        .btn { background: var(--primary); color: white; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: bold; transition: background 0.2s; border: none; font-size: 1rem; cursor: pointer; }
-        .btn:hover { background: var(--primary-dark); }
+        /* Floating Sticky App Checkout Tray */
+        .checkout-tray { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border-color); box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.1); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 999; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .checkout-tray.visible { transform: translateY(0); }
+        
+        .tray-info { text-align: left; }
+        .tray-label { font-size: 0.75rem; color: #a0aec0; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .tray-total { font-size: 1.5rem; font-weight: 800; color: #1a202c; }
+
+        .action-button { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2); transition: background 0.2s; }
+        .action-button:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body>
 
     <header class="app-header">
         <h1>Welcome to My Store</h1>
-        <p>Select your items and quantities below to checkout.</p>
+        <p>Adjust item quantities. Your central shopping cart updates automatically.</p>
     </header>
 
     <main class="app-container">
         <div class="product-list">
             
             <!-- Product 1 -->
-            <div class="product-card">
+            <div class="product-card" id="p1-card">
                 <div class="product-top">
                     <div class="product-details">
                         <div class="product-meta">
                             <span class="product-emoji">❄️</span>
-                            <h3>Snowflake Product</h3>
+                            <h3 id="p1-title">Snowflake Product</h3>
                         </div>
                         <p class="product-desc">High-quality specialty item carefully packaged.</p>
                         <div class="product-pricing">
@@ -84,26 +95,25 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <button class="qty-btn" onclick="changeQty('p1', -1)">−</button>
-                            <span class="qty-number" id="p1-qty">1g</span>
-                            <button class="qty-btn" onclick="changeQty('p1', 1)">+</button>
+                            <button type="button" class="qty-btn" onclick="changeQty('p1', -1)">−</button>
+                            <span class="qty-number" id="p1-qty">0g</span>
+                            <button type="button" class="qty-btn" onclick="changeQty('p1', 1)">+</button>
                         </div>
                     </div>
                     <div>
                         <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p1-total">$100.00</div>
+                        <div class="subtotal-display" id="p1-total">$0.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p1')">Buy Now</button>
                 </div>
             </div>
 
             <!-- Product 2 (Minimum 50g) -->
-            <div class="product-card">
+            <div class="product-card" id="p2-card">
                 <div class="product-top">
                     <div class="product-details">
                         <div class="product-meta">
                             <span class="product-emoji">🍫</span>
-                            <h3>Chocolate Bar Product</h3>
+                            <h3 id="p2-title">Chocolate Bar Product</h3>
                         </div>
                         <p class="product-desc">Premium rich blend crafted to order.</p>
                         <div class="product-pricing">
@@ -115,26 +125,25 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <button class="qty-btn" onclick="changeQty('p2', -1)">−</button>
-                            <span class="qty-number" id="p2-qty">50g</span>
-                            <button class="qty-btn" onclick="changeQty('p2', 1)">+</button>
+                            <button type="button" class="qty-btn" onclick="changeQty('p2', -1)">−</button>
+                            <span class="qty-number" id="p2-qty">0g</span>
+                            <button type="button" class="qty-btn" onclick="changeQty('p2', 1)">+</button>
                         </div>
                     </div>
                     <div>
                         <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p2-total">$100.00</div>
+                        <div class="subtotal-display" id="p2-total">$0.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p2')">Buy Now</button>
                 </div>
             </div>
 
             <!-- Product 3 (Minimum 15g) -->
-            <div class="product-card">
+            <div class="product-card" id="p3-card">
                 <div class="product-top">
                     <div class="product-details">
                         <div class="product-meta">
                             <span class="product-emoji">🍀</span>
-                            <h3>Lucky Clover Product</h3>
+                            <h3 id="p3-title">Lucky Clover Product</h3>
                         </div>
                         <p class="product-desc">Fresh natural botanicals sourced responsibly.</p>
                         <div class="product-pricing">
@@ -146,55 +155,22 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <button class="qty-btn" onclick="changeQty('p3', -1)">−</button>
-                            <span class="qty-number" id="p3-qty">15g</span>
-                            <button class="qty-btn" onclick="changeQty('p3', 1)">+</button>
+                            <button type="button" class="qty-btn" onclick="changeQty('p3', -1)">−</button>
+                            <span class="qty-number" id="p3-qty">0g</span>
+                            <button type="button" class="qty-btn" onclick="changeQty('p3', 1)">+</button>
                         </div>
                     </div>
                     <div>
                         <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p3-total">$60.00</div>
+                        <div class="subtotal-display" id="p3-total">$0.00</div>
                     </div>
-                    <button class="btn" onclick="checkout('p3')">Buy Now</button>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <script>
-        const prices = {
-            p1: 100.00,
-            p2: 2.00,
-            p3: 4.00
-        };
-
-        const stepSizes = {
-            p1: 1,
-            p2: 50,
-            p3: 15
-        };
-
-        window.changeQty = function(productId, direction) {
-            const qtyElement = document.getElementById(productId + '-qty');
-            let currentQty = parseInt(qtyElement.innerText);
-            
-            if (direction === 1) {
-                currentQty = currentQty + stepSizes[productId];
-            } else if (direction === -1) {
-                currentQty = currentQty - stepSizes[productId];
-            }
-            
-            if (currentQty < stepSizes[productId]) {
-                currentQty = stepSizes[productId];
-            }
-            
-            qtyElement.innerText = currentQty + 'g';
-            
-            const totalElement = document.getElementById(productId + '-total');
-            const totalCost = (currentQty * prices[productId]).toFixed(2);
-            totalElement.innerText = '$' + totalCost;
-        };
-
-        function checkout(productId) {
-            const qty = document.getElementById(productId + '-qty').innerText;
+    <!-- Global Floating App Checkout Tray -->
+    <div class="checkout-tray" id="bottom-tray">
+        <div class="tray-info">
+            <div class="tray-label" id="tray-item-count">0 Items Selected</div>
