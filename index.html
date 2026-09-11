@@ -3,178 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My 3-Product Store</title>
+    <title>QuickStore App</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; background: #fafafa; color: #333; }
-        .store-container { max-width: 1000px; margin: 0 auto; }
-        .product-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px; }
-        .card { background: white; border: 1px solid #e0e0e0; padding: 25px; border-radius: 12px; width: 260px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        :root {
+            --primary: #25D366;
+            --primary-dark: #128C7E;
+            --bg-main: #f4f6f8;
+            --text-main: #2d3748;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 90px; }
+
+        /* App Header Layout */
+        .app-header { background: white; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); sticky: top; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .app-header h1 { font-size: 1.6rem; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; }
+        .app-header p { font-size: 0.9rem; color: #718096; margin-top: 4px; }
+
+        /* Main Grid Structure */
+        .app-container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
+        .product-list { display: flex; flex-direction: column; gap: 16px; }
+
+        /* Modernized Product Rows (App-Style Cards) */
+        .product-card { background: var(--card-bg); border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .product-card.selected { border-color: var(--primary); background: #f0fff4; }
         
-        /* High-Visibility Base Price Styling */
-        .price { font-size: 1.75rem; font-weight: 800; color: #28a745; margin: 5px 0; }
-        .unit { font-size: 0.95rem; color: #555; margin-bottom: 12px; font-weight: bold; }
-        .emoji-title { font-size: 2.5rem; margin: 10px 0; }
+        .product-details { flex: 1; text-align: left; padding-right: 12px; }
+        .product-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .product-emoji { font-size: 2rem; }
+        .product-title { font-size: 1.1rem; font-weight: 700; color: #1a202c; }
+        .product-desc { font-size: 0.85rem; color: #718096; line-height: 1.3; margin-top: 4px; }
         
-        /* Quantity Selector & Running Total Styling */
-        .quantity-section { background: #fdfdfd; padding: 15px 5px; border-radius: 8px; border: 1px dashed #ccc; margin: 15px 0; }
-        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px; }
-        .qty-btn { background: #f0f0f0; border: 1px solid #ccc; font-size: 1.2rem; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: background 0.2s; }
-        .qty-btn:hover { background: #e0e0e0; }
-        .qty-number { font-size: 1.2rem; font-weight: bold; width: 60px; color: #111; }
+        .product-pricing { margin-top: 8px; display: flex; align-items: baseline; gap: 6px; }
+        .product-price { font-size: 1.2rem; font-weight: 800; color: #2d3748; }
+        .product-unit { font-size: 0.8rem; color: #718096; font-weight: 600; }
+
+        /* Compact Controller Module */
+        .controls-wrapper { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; min-width: 110px; }
+        .qty-controller { display: flex; align-items: center; background: #edf2f7; border-radius: 24px; padding: 4px; gap: 8px; width: 100%; justify-content: space-between; }
+        .qty-btn { width: 32px; height: 32px; background: white; border: none; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none; }
+        .qty-btn:active { transform: scale(0.95); }
+        .qty-val { font-size: 0.95rem; font-weight: 700; color: #1a202c; }
         
-        /* Clear Running Subtotal Display */
-        .subtotal-display { font-size: 1.3rem; font-weight: 800; color: #28a745; margin-top: 5px; }
-        .subtotal-label { font-size: 0.75rem; color: #777; text-transform: uppercase; font-weight: bold; }
+        .row-subtotal { font-size: 0.85rem; font-weight: 800; color: var(--primary-dark); margin-top: 6px; display: none; }
+        .row-subtotal.active { display: block; }
+
+        /* Floating App Checkout Tray */
+        .checkout-tray { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border-color); box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.1); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 999; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .checkout-tray.visible { transform: translateY(0); }
         
-        /* Buy Button Styling */
-        .btn { display: block; background: #25D366; color: white; padding: 14px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.2s; border: none; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-        .btn:hover { background: #128C7E; }
+        .tray-info { text-align: left; }
+        .tray-label { font-size: 0.75rem; color: #a0aec0; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .tray-total { font-size: 1.5rem; font-weight: 800; color: #1a202c; }
+
+        .action-button { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); transition: background 0.2s; }
+        .action-button:hover { background: var(--primary-dark); }
+
+        /* App Drawer Modal (Checkout Form Overlay) */
+        .drawer-overlay { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.4); z-index: 2000; display: none; backdrop-filter: blur(2px); }
+        .drawer-overlay.active { display: block; }
+        
+        .drawer-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 24px 24px 0 0; max-height: 85vh; overflow-y: auto; padding: 24px; z-index: 2001; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .drawer-overlay.active + .drawer-sheet { transform: translateY(0); }
+
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .sheet-title { font-size: 1.3rem; font-weight: 800; }
+        .close-sheet { font-size: 1.5rem; background: #edf2f7; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* Form Controls */
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: #4a5568; margin-bottom: 6px; }
+        .input-group input, .input-group textarea { width: 100%; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-size: 0.95rem; outline: none; background: #f7fafc; transition: all 0.2s; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1); }
+        
+        .submit-order-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); }
+        .submit-order-btn:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body>
 
-    <div class="store-container">
-        <h1>Welcome to My Store</h1>
-        <p>Select your items and quantities below to checkout.</p>
+    <header class="app-header">
+        <h1>QuickStore App</h1>
+        <p>Choose item weights & instantly check out down below.</p>
+    </header>
 
-        <div class="product-grid">
-            <!-- Product 1 -->
-            <div class="card">
-                <div>
-                    <div class="emoji-title" id="p1-emoji">❄️</div>
-                    <h3 id="p1-title">Snowflake Product</h3>
-                    <p class="price">$100.00</p>
-                    <div class="unit">per 1g</div>
-                    <p>High-quality specialty item carefully packaged.</p>
-                </div>
-                <div>
-                    <div class="quantity-section">
-                        <div class="quantity-control">
-                            <div class="qty-btn" onclick="changeQty('p1', -1)">−</div>
-                            <div class="qty-number" id="p1-qty">1g</div>
-                            <div class="qty-btn" onclick="changeQty('p1', 1)">+</div>
-                        </div>
-                        <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p1-total">$100.00</div>
+    <main class="app-container">
+        <div class="product-list">
+            
+            <!-- Item 1 -->
+            <div class="product-card" id="p1-card">
+                <div class="product-details">
+                    <div class="product-meta">
+                        <span class="product-emoji" id="p1-emoji">❄️</span>
+                        <span class="product-title" id="p1-title">Snowflake Product</span>
                     </div>
-                    <button class="btn" onclick="checkout('p1')">Order via WhatsApp</button>
+                    <p class="product-desc">High-quality specialty item carefully packaged.</p>
+                    <div class="product-pricing">
+                        <span class="product-price">$100.00</span>
+                        <span class="product-unit">/ 1g</span>
+                    </div>
+                </div>
+                <div class="controls-wrapper">
+                    <div class="qty-controller">
+                        <button class="qty-btn" onclick="modifyQty('p1', -1)">−</button>
+                        <span class="qty-val" id="p1-qty">0g</span>
+                        <button class="qty-btn" onclick="modifyQty('p1', 1)">+</button>
+                    </div>
+                    <div class="row-subtotal" id="p1-subtotal">$0.00</div>
                 </div>
             </div>
 
-            <!-- Product 2 (Minimum 50g) -->
-            <div class="card">
-                <div>
-                    <div class="emoji-title" id="p2-emoji">🍫</div>
-                    <h3 id="p2-title">Chocolate Bar Product</h3>
-                    <p class="price">$2.00</p>
-                    <div class="unit">per 1g (Min. 50g)</div>
-                    <p>Premium rich blend crafted to order.</p>
-                </div>
-                <div>
-                    <div class="quantity-section">
-                        <div class="quantity-control">
-                            <div class="qty-btn" onclick="changeQty('p2', -1)">−</div>
-                            <div class="qty-number" id="p2-qty">50g</div>
-                            <div class="qty-btn" onclick="changeQty('p2', 1)">+</div>
-                        </div>
-                        <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p2-total">$100.00</div>
+            <!-- Item 2 -->
+            <div class="product-card" id="p2-card">
+                <div class="product-details">
+                    <div class="product-meta">
+                        <span class="product-emoji" id="p2-emoji">🍫</span>
+                        <span class="product-title" id="p2-title">Chocolate Bar Product</span>
                     </div>
-                    <button class="btn" onclick="checkout('p2')">Order via WhatsApp</button>
+                    <p class="product-desc">Premium rich blend crafted to order.</p>
+                    <div class="product-pricing">
+                        <span class="product-price">$2.00</span>
+                        <span class="product-unit">/ 1g (Min. 50g)</span>
+                    </div>
+                </div>
+                <div class="controls-wrapper">
+                    <div class="qty-controller">
+                        <button class="qty-btn" onclick="modifyQty('p2', -1)">−</button>
+                        <span class="qty-val" id="p2-qty">0g</span>
+                        <button class="qty-btn" onclick="modifyQty('p2', 1)">+</button>
+                    </div>
+                    <div class="row-subtotal" id="p2-subtotal">$0.00</div>
                 </div>
             </div>
 
-            <!-- Product 3 (Minimum 15g) -->
-            <div class="card">
-                <div>
-                    <div class="emoji-title" id="p3-emoji">🍀</div>
-                    <h3 id="p3-title">Lucky Clover Product</h3>
-                    <p class="price">$4.00</p>
-                    <div class="unit">per 1g (Min. 15g)</div>
-                    <p>Fresh natural botanicals sourced responsibly.</p>
-                </div>
-                <div>
-                    <div class="quantity-section">
-                        <div class="quantity-control">
-                            <div class="qty-btn" onclick="changeQty('p3', -1)">−</div>
-                            <div class="qty-number" id="p3-qty">15g</div>
-                            <div class="qty-btn" onclick="changeQty('p3', 1)">+</div>
-                        </div>
-                        <div class="subtotal-label">Subtotal</div>
-                        <div class="subtotal-display" id="p3-total">$60.00</div>
+            <!-- Item 3 -->
+            <div class="product-card" id="p3-card">
+                <div class="product-details">
+                    <div class="product-meta">
+                        <span class="product-emoji" id="p3-emoji">🍀</span>
+                        <span class="product-title" id="p3-title">Lucky Clover Product</span>
                     </div>
-                    <button class="btn" onclick="checkout('p3')">Order via WhatsApp</button>
+                    <p class="product-desc">Fresh natural botanicals sourced responsibly.</p>
+                    <div class="product-pricing">
+                        <span class="product-price">$4.00</span>
+                        <span class="product-unit">/ 1g (Min. 15g)</span>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const prices = {
-            p1: 100.00,
-            p2: 2.00,
-            p3: 4.00
-        };
-
-        // Minimum charge values which also serve as our step sizes
-        const stepSizes = {
-            p1: 1,
-            p2: 50,
-            p3: 15
-        };
-
-        fn = function changeQty(productId, direction) {
-            const qtyElement = document.getElementById(productId + '-qty');
-            let currentQty = parseInt(qtyElement.innerText);
-            
-            if (direction === 1) {
-                // Add the minimum charge amount instead of doubling
-                currentQty = currentQty + stepSizes[productId];
-            } else if (direction === -1) {
-                // Subtract the minimum charge amount instead of halving
-                currentQty = currentQty - stepSizes[productId];
-            }
-            
-            // Prevent lowering the selection below its respective minimum limit
-            if (currentQty < stepSizes[productId]) {
-                currentQty = stepSizes[productId];
-            }
-            
-            qtyElement.innerText = currentQty + 'g';
-            
-            const totalElement = document.getElementById(productId + '-total');
-            const totalCost = (currentQty * prices[productId]).toFixed(2);
-            totalElement.innerText = '$' + totalCost;
-        };
-        window.changeQty = fn;
-
-        function checkout(productId) {
-            // 1. Target target elements to gather order details
-            const productName = document.getElementById(productId + '-title').innerText;
-            const productEmoji = document.getElementById(productId + '-emoji').innerText;
-            const qty = document.getElementById(productId + '-qty').innerText;
-            const totalCost = document.getElementById(productId + '-total').innerText;
-            
-            // 2. Set WhatsApp target telephone with international code (Lebanon +961)
-            const whatsappNumber = "96181438780";
-            
-            // 3. Construct a beautiful, clean checkout text message layout
-            const baselineText = 
-                `🛒 *NEW ONLINE ORDER*\n` +
-                `-------------------------\n` +
-                `📦 *Item:* ${productEmoji} ${productName}\n` +
-                `⚖️ *Quantity:* ${qty}\n` +
-                `💰 *Total Price:* ${totalCost}\n` +
-                `-------------------------\n` +
-                `Please process my order!`;
-            
-            // 4. Safely compile strings so characters like spaces and emojis translate cleanly
-            const encodedText = encodeURIComponent(baselineText);
-            
-            // 5. Instantly redirect customer directly to desktop or mobile app
-            window.open(`https://whatsapp.com{whatsappNumber}&text=${encodedText}`, '_blank');
-        }
-    </script>
-
-</body>
-</html>
+                <div class="controls-wrapper">
+                    <div class="qty-controller">
+                        <button class="qty-btn" onclick="modifyQty('p3', -1)">−</button>
