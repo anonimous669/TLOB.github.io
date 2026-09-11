@@ -48,7 +48,7 @@
         /* HIGH INTERACTIVE TOUCH CONFIGURATIONS */
         .quantity-control { display: flex; align-items: center; background: #edf2f7; border-radius: 24px; padding: 4px; gap: 8px; min-width: 140px; justify-content: space-between; position: relative; z-index: 10; }
         
-        /* Direct touch block style wrapper overrides overlapping anomalies */
+        /* Semantic buttons format configured to prevent mobile tap filtering */
         .qty-btn { 
             width: 36px; 
             height: 36px; 
@@ -57,7 +57,7 @@
             border-radius: 50%; 
             font-size: 1.2rem; 
             font-weight: bold; 
-            cursor: pointer; 
+            cursor: pointer; /* Crucial instruction step for mobile web viewkits */
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -65,7 +65,7 @@
             user-select: none; 
             color: #1a202c; 
             transition: background 0.15s, transform 0.1s;
-            pointer-events: auto !important; /* Forces layout layers to accept touch entry keys */
+            -webkit-tap-highlight-color: transparent; /* Disables the native mobile blue tap flash rectangle overlay */
         }
         .qty-btn:hover { background: #e2e8f0; }
         .qty-btn:active { transform: scale(0.88); background: #cbd5e0; }
@@ -115,10 +115,10 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <!-- Converted elements to isolated divs with z-index positioning for flawless tapping -->
-                            <div class="qty-btn" onclick="changeQty('p1', -1)">−</div>
+                            <!-- Converted elements back to formal semantic buttons with programmatic hooks -->
+                            <button type="button" class="qty-btn" data-id="p1" data-dir="-1">−</button>
                             <span class="qty-number" id="p1-qty">0g</span>
-                            <div class="qty-btn" onclick="changeQty('p1', 1)">+</div>
+                            <button type="button" class="qty-btn" data-id="p1" data-dir="1">+</button>
                         </div>
                     </div>
                     <div>
@@ -146,9 +146,9 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <div class="qty-btn" onclick="changeQty('p2', -1)">−</div>
+                            <button type="button" class="qty-btn" data-id="p2" data-dir="-1">−</button>
                             <span class="qty-number" id="p2-qty">0g</span>
-                            <div class="qty-btn" onclick="changeQty('p2', 1)">+</div>
+                            <button type="button" class="qty-btn" data-id="p2" data-dir="1">+</button>
                         </div>
                     </div>
                     <div>
@@ -176,8 +176,4 @@
                 <div class="product-bottom">
                     <div class="quantity-section">
                         <div class="quantity-control">
-                            <div class="qty-btn" onclick="changeQty('p3', -1)">−</div>
-                            <span class="qty-number" id="p3-qty">0g</span>
-                            <div class="qty-btn" onclick="changeQty('p3', 1)">+</div>
-                        </div>
-                    </div>
+                            <button type="button" class="qty-btn" data-id="p3" data-dir="-1">−</button>
